@@ -1,26 +1,30 @@
 package ru.pokrov.calc;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView tvResult;
+    private EditText etInput;
+    private TextView tvPreview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        tvResult = findViewById(R.id.tvResult);
+        etInput = findViewById(R.id.etInput);
+        etInput.setShowSoftInputOnFocus(false);
+        tvPreview = findViewById(R.id.tvPreview);
     }
 
     public void onDigitClick(View view) {
         CharSequence btn = ((Button)view).getText();
-        tvResult.append(btn);
+        tvPreview.append(btn);
     }
 }
