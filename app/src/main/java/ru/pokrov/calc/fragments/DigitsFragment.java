@@ -11,4 +11,3 @@ public class DigitsFragment extends AbstractInputFragment {
     }
 
 }
-

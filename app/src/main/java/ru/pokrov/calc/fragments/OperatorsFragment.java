@@ -1,7 +1,5 @@
 package ru.pokrov.calc.fragments;
 
-import android.content.Context;
-
 import ru.pokrov.calc.R;
 
 
