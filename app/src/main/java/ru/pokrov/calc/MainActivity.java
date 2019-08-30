@@ -1,9 +1,12 @@
 package ru.pokrov.calc;
 
 
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.BindingAdapter;
@@ -15,24 +18,33 @@ import ru.pokrov.calc.models.Calc;
 
 public class MainActivity extends AppCompatActivity {
 
+    private ActivityMainBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // hide header in landscape orientation
+        int display_mode = getResources().getConfiguration().orientation;
+        if (display_mode == Configuration.ORIENTATION_LANDSCAPE) {
+            getSupportActionBar().hide();
+        }
+
         super.onCreate(savedInstanceState);
-        ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
         binding.setCalc(new Calc());
-
-        EditText etInput = findViewById(R.id.etInput);
-        etInput.setShowSoftInputOnFocus(false);
+        binding.etInput.setShowSoftInputOnFocus(false);
     }
 
     @BindingAdapter("android:text")
     public static void setEtInput(EditText editText, CharSequence value) {
         if (!editText.getText().toString().equals(value.toString())) {
-            int pos = editText.getSelectionStart();
+            int pos = editText.getSelectionStart(); // save cursor position before changing
             editText.setText(value);
-            editText.setSelection(pos);
+            try {
+                editText.setSelection(pos); // than back it to its place
+            } catch (RuntimeException e) {
+                Log.d("myLog", "cursor exception");
+            }
         }
     }
 
@@ -41,4 +53,21 @@ public class MainActivity extends AppCompatActivity {
         return editText.getText().toString();
     }
 
+
+    public void onClickBackspace(View view) {
+        int start = binding.etInput.getSelectionStart();
+        int end = binding.etInput.getSelectionEnd();
+        binding.etInput.getText().delete((start == end) ? start-1 : start, end);
+    }
+
+    public void onClickResult(View view) {
+        binding.getCalc().accept();
+    }
+
+    public void onClickInput(View view) {
+        binding.etInput.getText().replace(
+                binding.etInput.getSelectionStart(), binding.etInput.getSelectionEnd(),
+                ((Button)view).getText().toString()
+        );
+    }
 }

@@ -6,23 +6,22 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="buttonStyle">@style/Button</item>
     </style>
 
-    <style name="DigitsTheme" parent="AppTheme">
-        <item name="buttonStyle">@style/ButtonDigit</item>
-    </style>
-
-    <style name="OperatorsTheme" parent="AppTheme">
-        <item name="buttonStyle">@style/ButtonOperator</item>
-    </style>
-
-    <style name="ButtonDigit" parent="Widget.AppCompat.Button">
+    <style name="Button" parent="Widget.AppCompat.Button">
         <item name="android:textSize"> @dimen/button_text_size </item>
+        <item name="android:minWidth"> @dimen/button_min_width </item>
+        <item name="android:minHeight"> @dimen/button_min_height </item>
     </style>
 
-    <style name="ButtonOperator" parent="Widget.AppCompat.Button.Colored">
-        <item name="android:textSize"> @dimen/button_text_size </item>
+    <style name="Button.Colored">
+        <item name="android:textColor">?attr/colorAccent</item>
     </style>
 
+    <style name="Button.ColorInversed">
+        <item name="android:background">@drawable/abc_btn_colored_material</item>
+    </style>
 
 </resources>

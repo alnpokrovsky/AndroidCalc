@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout 
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:bind="http://schemas.android.com/apk/res-auto">
+    xmlns:tools="http://schemas.android.com/tools">
     
     <data>
         <import type="ru.pokrov.calc.models.Calc"/>
@@ -11,101 +10,74 @@
             type="Calc" />
     </data>
 
-<TableLayout
+<LinearLayout android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:stretchColumns="*">
+    >
 
     <EditText
         android:id="@+id/etInput"
+        android:layout_height="0dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:layout_margin="@dimen/small_margin"
         android:padding="@dimen/medium_padding"
         android:ems="10"
         android:text="@={calc.Input}"
         android:textSize="@dimen/input_text_size"
         android:textAlignment="textEnd"
         android:inputType="textMultiLine"
-        tools:text="2+2"
-        />
+        android:maxLines="4"
+        android:maxLength="45"
+        tools:text="2+2" />
 
     <TextView
         android:id="@+id/tvPreview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/medium_padding"
+        android:layout_margin="@dimen/small_margin"
         android:textSize="@dimen/preview_text_size"
         android:textAlignment="textEnd"
+        android:text="@{calc.Result}"
         tools:text="4"
         />
 
-    <TableRow>
-        <GridLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:columnCount="1"
-            android:padding="@dimen/small_padding"
-            android:theme="@style/OperatorsTheme">
 
-            <Button android:text="+" />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="del"
+        android:padding="@dimen/small_padding"
+        android:layout_margin="@dimen/small_margin"
+        android:layout_gravity="right"
+        android:onClick="onClickBackspace"
+        />
 
-            <Button android:text="-" />
+    <LinearLayout android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/small_padding"
+        android:baselineAligned="false">
 
-            <Button android:text="*" />
+        <fragment
+            android:id="@+id/frDigits"
+            android:name="ru.pokrov.calc.fragments.DigitsFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            tools:layout="@layout/fragment_digits" />
 
-            <Button android:text="/" />
-        </GridLayout>
+        <fragment
+            android:id="@+id/frOperators"
+            android:name="ru.pokrov.calc.fragments.OperatorsFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            tools:layout="@layout/fragment_operators" />
 
-
-        <!-- digits section -->
-        <GridLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:columnCount="3"
-            android:padding="@dimen/small_padding"
-            android:theme="@style/DigitsTheme">
-
-            <Button android:text="1"
-                    android:onClick="@{(view) -> calc.onAdd(Calc.BaseToken.TOK_1)}"
-                />
-
-            <Button android:text="2"
-                />
-
-            <Button android:text="3"
-                />
-
-            <Button android:text="4"
-                />
-
-            <Button android:text="5"
-                />
-
-            <Button android:text="6"
-                />
-
-            <Button android:text="7"
-                />
-
-            <Button android:text="8"
-                />
-
-            <Button android:text="9"
-                />
-
-            <Button
-                android:layout_columnSpan="2"
-                android:layout_gravity="fill"
-                android:text="0" />
-
-            <Button android:text="." />
-        </GridLayout>
-    </TableRow>
+    </LinearLayout>
 
 
-</TableLayout>
+</LinearLayout>
+
 </layout>
