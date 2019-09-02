@@ -7,7 +7,7 @@ public class DigitsFragment extends AbstractInputFragment {
 
     @Override
     protected int getLayoutRes() {
-        return R.layout.fragment_digits;
+        return R.layout.fragment_inputs;
     }
 
 }

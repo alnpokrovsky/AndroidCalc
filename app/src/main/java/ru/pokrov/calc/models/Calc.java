@@ -6,10 +6,16 @@ import androidx.databinding.library.baseAdapters.BR;
 
 public class Calc extends BaseObservable {
 
+    static Calc sCalc = new Calc();
+
     private String input = "";
     private String result = "";
 
-    public Calc() {
+    public static Calc sGet() {
+        return sCalc;
+    }
+
+    private Calc() {
         super();
     }
 

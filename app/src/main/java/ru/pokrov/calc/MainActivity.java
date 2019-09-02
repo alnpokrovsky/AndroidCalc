@@ -12,9 +12,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.BindingAdapter;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.InverseBindingAdapter;
-
 import ru.pokrov.calc.databinding.ActivityMainBinding;
 import ru.pokrov.calc.models.Calc;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
-        binding.setCalc(new Calc());
+        binding.setCalc(Calc.sGet());
         binding.etInput.setShowSoftInputOnFocus(false);
     }
 
