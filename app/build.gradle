@@ -7,6 +7,9 @@ plugins {
 
 compileJavacc {
     arguments = [grammar_encoding: 'UTF-8', static: 'false']
+    inputDirectory = file('jj')
+    outputDirectory = file(project.buildDir.absolutePath
+            + '/build/generated/javacc/ru/pokrov/calc/parser')
 }
 
 android {
@@ -27,6 +30,14 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    sourceSets {
+        main {
+            java.srcDir compileJavacc.outputDirectory
+        }
+        applicationVariants.all {
+            variant -> variant.javaCompile.dependsOn compileJavacc
         }
     }
     compileOptions {
