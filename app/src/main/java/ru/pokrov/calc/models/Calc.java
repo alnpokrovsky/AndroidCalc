@@ -39,9 +39,23 @@ public class Calc extends BaseObservable {
 
         try {
             Parser parser = new Parser(stream);
-            setResult("" + parser.Parce());
+            setResult(parser.Parce() + "");
+        } catch (ParseException e) {
+            setResult(e.currentToken.next.toString());
+        }
+    }
+
+    public static String getLastTokenAt(String input, int pos) {
+        InputStream stream = new ByteArrayInputStream(
+                input.substring(0,pos)
+                        .getBytes(StandardCharsets.UTF_8)
+        );
+
+        try {
+            Parser parser = new Parser(stream);
+            return parser.getLastToken().image;
         } catch (Exception e) {
-            setResult("");
+            return null;
         }
     }
 
@@ -50,7 +64,7 @@ public class Calc extends BaseObservable {
         return result;
     }
 
-    public void setResult(String result) {
+    private void setResult(String result) {
         this.result = result;
         notifyPropertyChanged(BR.result);
     }

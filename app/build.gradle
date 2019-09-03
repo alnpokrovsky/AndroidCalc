@@ -7,9 +7,9 @@ plugins {
 
 compileJavacc {
     arguments = [grammar_encoding: 'UTF-8', static: 'false']
-    inputDirectory = file('jj')
+    inputDirectory = file('javacc')
     outputDirectory = file(project.buildDir.absolutePath
-            + '/build/generated/javacc/ru/pokrov/calc/parser')
+            + '/generated/javacc/ru/pokrov/calc/parser')
 }
 
 android {

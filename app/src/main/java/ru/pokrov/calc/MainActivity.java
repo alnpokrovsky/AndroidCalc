@@ -64,10 +64,22 @@ public class MainActivity extends AppCompatActivity {
         binding.getCalc().accept();
     }
 
-    public void onClickInput(View view) {
+    private void addEtInput(String input) {
         binding.etInput.getText().replace(
                 binding.etInput.getSelectionStart(), binding.etInput.getSelectionEnd(),
-                ((Button)view).getText().toString()
+                input
         );
+    }
+
+    private void removeEtInput() {
+        String tok = Calc.getLastTokenAt(
+                binding.etInput.getText().toString(),
+                binding.etInput.getSelectionStart()
+        );
+//        binding.etInput.setSelection();
+    }
+
+    public void onClickInput(View view) {
+        addEtInput(((Button)view).getText().toString());
     }
 }
