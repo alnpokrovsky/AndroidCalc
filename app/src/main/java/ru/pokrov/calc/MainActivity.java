@@ -5,6 +5,8 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -28,7 +30,10 @@ public class MainActivity extends AppCompatActivity {
         // hide header in landscape orientation
         int display_mode = getResources().getConfiguration().orientation;
         if (display_mode == Configuration.ORIENTATION_LANDSCAPE) {
-            getSupportActionBar().hide();
+            requestWindowFeature(Window.FEATURE_NO_TITLE); //will hide the title
+            getSupportActionBar().hide(); // hide the title bar
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                    WindowManager.LayoutParams.FLAG_FULLSCREEN); //enable full screen
         }
 
         super.onCreate(savedInstanceState);
@@ -65,13 +70,12 @@ public class MainActivity extends AppCompatActivity {
 
         Token t = Calc.sTokenAt(start);
         if (t.kind != ParserConstants.NUMBER) {
-            start = t.beginColumn;
+            start = t.beginColumn-1;
             end = t.endColumn;
+        } else if (start == end) {
+            start -= 1;
         }
 
-        if (start == end) {
-            start = start - 1;
-        }
         binding.etInput.getText().delete(start, end);
     }
 

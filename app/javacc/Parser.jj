@@ -48,7 +48,7 @@ SKIP:{
 TOKEN : { < NUMBER : <DIGITS> | <DIGITS> "." <DIGITS> | <DIGITS> "." | "."<DIGITS> > }
 TOKEN : { < #DIGITS : (["0"-"9"])+ > }
 
-TOKEN:{
+TOKEN[IGNORE_CASE]:{
     < ADD: "+" >
   | < SUB: "-" >
   | < MUL: "*" >
@@ -56,6 +56,12 @@ TOKEN:{
   | < POW: "^" >
   | < LBR: "(" >
   | < RBR: ")" >
+  | < SIN: "SIN" >
+  | < COS: "COS" >
+  | < TAN: "TAN" >
+  | < CTAN: "CTAN" >
+  | < LOG: "LOG" >
+  | < LN:  "LN" >
 }
 
 <*> TOKEN : { <UNKNOWN: (~[])> }
@@ -126,10 +132,10 @@ double Priority3() throws NumberFormatException, IllegalArgumentException :
     double value ;
 }
 {
-    value = Primary()
+    value = Priority4()
     (
         <POW>
-        i = Primary()
+        i = Priority4()
         {
             if (value < 0) throw new IllegalArgumentException("pow < 0");
             value = Math.pow(value, i);
@@ -138,6 +144,57 @@ double Priority3() throws NumberFormatException, IllegalArgumentException :
     { return value ; }
 }
 
+
+double Priority4() throws NumberFormatException, IllegalArgumentException :
+{
+    double value ;
+}
+{
+    (
+        value = Primary()
+        |
+        <SIN>
+        value = Primary()
+        {
+            value = Math.sin(value);
+        }
+        |
+        <COS>
+        value = Primary()
+        {
+            value = Math.cos(value);
+        }
+        |
+        <TAN>
+        value = Primary()
+        {
+            if (value % Math.PI == Math.PI/2) throw new IllegalArgumentException("tg pi/2");
+            value = Math.tan(value);
+        }
+        |
+        <CTAN>
+        value = Primary()
+        {
+            if (value % Math.PI == 0) throw new IllegalArgumentException("ctg 0");
+            value = 1 / Math.tan(value);
+        }
+        |
+        <LN>
+        value = Primary()
+        {
+            if (value < 0) throw new IllegalArgumentException("ln <0");
+            value = Math.log(value);
+        }
+        |
+        <LOG>
+        value = Primary()
+        {
+            if (value < 0) throw new IllegalArgumentException("ln <0");
+            value = Math.log(value)/Math.log(10);
+        }
+    )
+    { return value; }
+}
 
 /**
  * Primary ->  number
