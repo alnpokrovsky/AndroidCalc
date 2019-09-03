@@ -15,6 +15,9 @@ import androidx.databinding.InverseBindingAdapter;
 import ru.pokrov.calc.databinding.ActivityMainBinding;
 import ru.pokrov.calc.models.Calc;
 
+import ru.pokrov.calc.parser.Token;
+import ru.pokrov.calc.parser.ParserConstants;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -57,7 +60,19 @@ public class MainActivity extends AppCompatActivity {
     public void onClickBackspace(View view) {
         int start = binding.etInput.getSelectionStart();
         int end = binding.etInput.getSelectionEnd();
-        binding.etInput.getText().delete((start == end) ? start-1 : start, end);
+
+        if (start == 0) return;
+
+        Token t = Calc.sTokenAt(start);
+        if (t.kind != ParserConstants.NUMBER) {
+            start = t.beginColumn;
+            end = t.endColumn;
+        }
+
+        if (start == end) {
+            start = start - 1;
+        }
+        binding.etInput.getText().delete(start, end);
     }
 
     public void onClickResult(View view) {
@@ -71,15 +86,32 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
-    private void removeEtInput() {
-        String tok = Calc.getLastTokenAt(
-                binding.etInput.getText().toString(),
-                binding.etInput.getSelectionStart()
-        );
-//        binding.etInput.setSelection();
+    public void onClickInputDigit(View view) {
+        Token t = Calc.sTokenAt(binding.etInput.getSelectionStart());
+        if (t.kind == ParserConstants.RBR) {
+            addEtInput("*"); // добввим умножение после закрывающей скобки
+        }
+        addEtInput(((Button)view).getText().toString());
     }
 
-    public void onClickInput(View view) {
+    // ввод бинарного оператора
+    public void onClickInputBinOperator(View view) {
+        Token t = Calc.sTokenAt(binding.etInput.getSelectionStart());
+        if (t.kind != ParserConstants.NUMBER &&
+                t.kind != ParserConstants.RBR &&
+                    t.kind != ParserConstants.LBR) {
+            onClickBackspace(view); // удаляем предыдущий оператор чтобы не возникало недопонимания
+        }
         addEtInput(((Button)view).getText().toString());
+    }
+
+    // ввод выражения со скобками (в т.ч. унарный операторы)
+    public void onClickInputBr(View view) {
+        Token t = Calc.sTokenAt(binding.etInput.getSelectionStart());
+        if (t.kind == ParserConstants.RBR || t.kind == ParserConstants.NUMBER) {
+            addEtInput("*"); // добавим умножение если до этого было число или закрывающая скобка
+        }
+        addEtInput(((Button)view).getText().toString());
+        binding.etInput.setSelection(binding.etInput.getSelectionStart() - 2); // перенесем курсор перед закрывающей кавычкой
     }
 }

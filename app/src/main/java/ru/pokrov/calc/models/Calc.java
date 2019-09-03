@@ -4,12 +4,9 @@ import androidx.databinding.BaseObservable;
 import androidx.databinding.Bindable;
 import androidx.databinding.library.baseAdapters.BR;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-
 import ru.pokrov.calc.parser.Parser;
 import ru.pokrov.calc.parser.ParseException;
+import ru.pokrov.calc.parser.Token;
 
 public class Calc extends BaseObservable {
 
@@ -20,6 +17,10 @@ public class Calc extends BaseObservable {
 
     public static Calc sGet() {
         return sCalc;
+    }
+
+    public static Token sTokenAt(int pos) {
+        return Parser.getTokenAt(sCalc.input, pos);
     }
 
     private Calc() {
@@ -33,29 +34,12 @@ public class Calc extends BaseObservable {
     }
 
     public void setInput(String input) {
-        InputStream stream = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
-        this.input = input;
-        notifyPropertyChanged(BR.input);
-
         try {
-            Parser parser = new Parser(stream);
-            setResult(parser.Parce() + "");
-        } catch (ParseException e) {
-            setResult(e.currentToken.next.toString());
-        }
-    }
-
-    public static String getLastTokenAt(String input, int pos) {
-        InputStream stream = new ByteArrayInputStream(
-                input.substring(0,pos)
-                        .getBytes(StandardCharsets.UTF_8)
-        );
-
-        try {
-            Parser parser = new Parser(stream);
-            return parser.getLastToken().image;
+            this.input = input;
+            notifyPropertyChanged(BR.input);
+            setResult(Parser.Parce(input) + "");
         } catch (Exception e) {
-            return null;
+            setResult("");
         }
     }
 

@@ -5,18 +5,34 @@ PARSER_BEGIN(Parser)
 
 package ru.pokrov.calc.parser;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+
 public class Parser{
 
-    public Token getLastToken() {
-        Token t = this.getNextToken();
-        Token prev = t;
+    public static InputStream toStream(String input) {
+        return new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
+    }
 
-        while (t.kind != ParserConstants.EOF) {
-            prev = t;
-            t = this.getNextToken();
-        }
+    public static Double Parce(String input) throws ParseException {
+        InputStream stream = toStream(input);
+        Parser parser = new Parser(stream);
+        return parser.Start();
+    }
 
-        return prev;
+    public static Token getTokenAt(String input, int pos) {
+        InputStream stream = toStream(input);
+        Parser parser = new Parser(stream);
+        Token t;
+
+        do {
+            t = parser.getNextToken();
+            if (t.beginColumn <= pos && pos <= t.endColumn)
+                break;
+        } while (t != null);
+
+        return t;
     }
 
 }
@@ -37,16 +53,19 @@ TOKEN:{
   | < SUB: "-" >
   | < MUL: "*" >
   | < DIV: "/" >
+  | < POW: "^" >
   | < LBR: "(" >
   | < RBR: ")" >
 }
 
-public double Parce() throws NumberFormatException :
+<*> TOKEN : { <UNKNOWN: (~[])> }
+
+public double Start() throws NumberFormatException :
 {
     double result;
 }
 {
-    result = Expression()
+    result = Priority1()
     <EOF>
     {
         return result;
@@ -54,35 +73,54 @@ public double Parce() throws NumberFormatException :
 }
 
 /**
- * Expression -> Term ( + Term
- *                    | - Term
- *                    )
+ * Priority1 -> Priority2 ( + Priority2
+ *                        | - Priority2
+ *                        )
  */
-private double Expression() throws NumberFormatException :
+private double Priority1() throws NumberFormatException :
 {
     double i ;
     double value ;
 }
 {
-    value = Term()
+    value = Priority2()
     (
         <ADD>
-        i = Term()
+        i = Priority2()
         { value += i ; }
         |
         <SUB>
-        i = Term()
+        i = Priority2()
         { value -= i ; }
     )*
     { return value ; }
 }
 
 /**
- * Term -> Primary ( * Primary
+ * Priority2 -> Primary ( * Primary
  *                 | / Primary
  *                 )
  */
-double Term() throws NumberFormatException :
+double Priority2() throws NumberFormatException :
+{
+    double i ;
+    double value ;
+}
+{
+    value = Priority3()
+    (
+        <MUL>
+        i = Priority3()
+        { value *= i ; }
+        |
+        <DIV>
+        i = Priority3()
+        { value /= i ; }
+    )*
+    { return value ; }
+}
+
+double Priority3() throws NumberFormatException, IllegalArgumentException :
 {
     double i ;
     double value ;
@@ -90,20 +128,20 @@ double Term() throws NumberFormatException :
 {
     value = Primary()
     (
-        <MUL>
+        <POW>
         i = Primary()
-        { value *= i ; }
-        |
-        <DIV>
-        i = Primary()
-        { value /= i ; }
+        {
+            if (value < 0) throw new IllegalArgumentException("pow < 0");
+            value = Math.pow(value, i);
+        }
     )*
     { return value ; }
 }
 
+
 /**
  * Primary ->  number
- *            | ( Expression )
+ *            | ( Priority1 )
  *            | - Primary
  */
 private double Primary() throws NumberFormatException :
@@ -115,7 +153,7 @@ private double Primary() throws NumberFormatException :
     t = <NUMBER>
     { return Double.parseDouble( t.image ) ; }
     |
-    <LBR> d=Expression() <RBR>
+    <LBR> d=Priority1() <RBR>
     { return d ; }
     |
     <SUB> d=Primary()
